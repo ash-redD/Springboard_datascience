@@ -1,0 +1,77 @@
+---
+title: "Data_wrangling_1"
+output: pdf_document
+---
+loading the dataset.
+```{r load, echo=FALSE}
+ library(readr)
+ refine_original <- read_csv("~/Desktop/Data Science/Data wrangling/exrecise/refine_original.csv")
+```
+
+
+
+The first task in the refine_original dataset is to clean the company column.
+
+```{r Refine_company, echo=TRUE}
+#refine company name
+refine_original$company <- tolower(refine_original$company)
+pattern_match <- function (pattern){
+  a <- grep(pattern, refine_original$company)
+  return (a)
+}
+replace_name <- function(original, a){
+  refine_original$company <- replace(refine_original$company, a, original)
+  return (refine_original$company)
+}
+original_names <- c("philips", "akzo","unilever")
+pattern <- c("ps","ak","uni")
+
+for(i in 1:length(pattern)){
+  a <- pattern_match(pattern[i])
+  refine_original$company <- replace_name(original_names[i], a)
+  a <- NULL
+}
+```
+
+Second task is to sepearate the column second column into two seperate columns product code and number. For which I used sepearate function. I created whole new dataset called refine_original_seperated.
+
+```{r seperate_column, echo=TRUE}
+library(dplyr)
+library(tidyr)
+refine_original_seperated <- refine_original %>% separate(col=`Product code / number`, into=c("product_code","product_number"), sep="-")
+
+```
+
+Third task is to create new column called category which is then filled with category name which corresponds  to the product code. 
+
+```{r category_column, echo=TRUE}
+refine_original_seperated$category[refine_original_seperated$product_code == "p"] <- "Smartphone"
+refine_original_seperated$category[refine_original_seperated$product_code == "v"] <- "TV"
+refine_original_seperated$category[refine_original_seperated$product_code == "x"] <- "Laptop"
+refine_original_seperated$category[refine_original_seperated$product_code == "q"] <- "Tablet"
+
+
+```
+
+In this task I used paste function to create new column full_address from existing columns.
+
+```{r full_address column, echo=TRUE}
+refine_original_seperated$full_address <- paste(refine_original_seperated$address, refine_original_seperated$city, refine_original_seperated$country, sep = ", ")
+```
+
+The final task of the exercise is to create dummy variables for category and companies, I used factor to determine how many columns. Then i just used most lazy approach to finish the job.
+
+```{r dummy_variables, echo=TRUE}
+#create dummy variables for company and product category
+refine_original_seperated$company_philips <- as.numeric(refine_original_seperated$company == "philips")
+refine_original_seperated$company_akzo <- as.numeric(refine_original_seperated$company == "akzo")
+refine_original_seperated$company_van_houten <- as.numeric(refine_original_seperated$company == "van houten")
+refine_original_seperated$company_unilever <- as.numeric(refine_original_seperated$company == "unilever")
+
+refine_original_seperated$product_Laptop <- as.numeric(refine_original_seperated$category == "Laptop")
+refine_original_seperated$product_Smartphone <- as.numeric(refine_original_seperated$category == "Smartphone")
+refine_original_seperated$product_Tablet <- as.numeric(refine_original_seperated$category == "Tablet")
+refine_original_seperated$product_TV <- as.numeric(refine_original_seperated$category == "TV")
+
+```
+
