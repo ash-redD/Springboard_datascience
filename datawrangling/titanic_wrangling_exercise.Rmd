@@ -1,0 +1,56 @@
+Data Wrangling exercise - 2 
+
+Titanic dataset importing.
+
+```{r read_csv}
+library(readr)
+titanic_original <- read_csv("~/Desktop/Data Science/Data wrangling/datawrangling_exercise_2/titanic3.csv")
+
+```
+
+1. Port of embarakation
+    Simplest approach to get the task done is to scan for missing values using "is.na" if it is true then          simply replace it with letter S.
+    
+    
+    
+```{r embarakation}
+#PORT OF EMBARKATION
+
+titanic_original$embarked[is.na(titanic3$embarked)] <- "S"
+```
+
+2. Age
+    The age has missing values, we need to replace that with mean value, my approach is to calculate seperate      means for both male and female and replace missing value in corresponding male and female row with the         means.
+
+```{r missing_age_values}
+
+
+#AGE
+titanic_original$age <- round(titanic_original$age)
+
+titanic_original$age[titanic3$sex == "male" & is.na(titanic_original$age)] <- round(mean(titanic3$age[titanic_original$sex == "male"], na.rm = TRUE))
+
+titanic_original$age[titanic3$sex == "female" & is.na(titanic_original$age)] <- round(mean(titanic3$age[titanic_original$sex == "female"], na.rm = TRUE))
+
+```
+
+3. Life Boat
+    Dealing with missing value is way too easy with the is.na approach, well all you need to is find the           corresponding rows and replace them.
+    
+    
+```{r boat}
+#LIFE BOAT
+
+titanic_original$boat[is.na(titanic_original$boat)] <- "NA"
+```
+
+4. Cabin 
+   Its similar to the above task but you have to create a new column and fill it with binary values 1 or 0 this    is very easy in R if you use as.numeric function.
+  
+```{r has_cabin}
+# Has_cabin
+
+titanic_original$has_cabin_number <- as.numeric(!(is.na(titanic3$cabin)))
+```
+
+
